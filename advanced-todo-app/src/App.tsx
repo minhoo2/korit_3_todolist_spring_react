@@ -1,4 +1,4 @@
-
+import './App.css'
 import { useEffect, useState } from 'react';
 import type { Todo } from './types/Todo';
 import TodoForm from "./components/TodoForm"
