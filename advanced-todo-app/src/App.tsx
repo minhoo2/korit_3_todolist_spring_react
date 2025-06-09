@@ -10,7 +10,7 @@ import { getAllTodos, addTodoApi, toggleTodoApi, deleteTodoApi } from './service
   // const [ todos, setTodos ] = useState<Todo[]>(() => {
   //   const storedTodos = localStorage.getItem('todos');
   //   return storedTodos ? JSON.parse(storedTodos): [];
-  // }); DB 에서 데이터를 가져올 것이라서 이제 안씀.
+  // }); DB 에서 데이터를 가져올 것이라서 이제 안씀
 
 function App() {
   const [ todos, setTodos ] = useState<Todo[]>([]);
