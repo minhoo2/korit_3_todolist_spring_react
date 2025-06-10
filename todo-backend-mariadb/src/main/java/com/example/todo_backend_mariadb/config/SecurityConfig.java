@@ -3,6 +3,7 @@ package com.example.todo_backend_mariadb.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -19,7 +20,6 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        // corsConfigurationSource() 밑에 정의하니깐 빨깧게 뜨는게 정상입니다.
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
@@ -27,11 +27,11 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authz ->
                         // preflight 요청(OPTION 메서드)은 인증 없이 모두 허용
                         authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                // 현재 로그인 기능에 따로 없으므로, 모든 API 요청을 임시로 허용
-                                .requestMatchers("/api/**").permitAll()
-                                // 혹시 몰라서 나머지 모든 요청도 일단 허용
-                                .anyRequest().permitAll()
-                );
+                                // 이제 /api 관련 경로는 인증된 사용자만 접근 가능하도록 변경할겁니다.
+                                .requestMatchers("/api/**").authenticated() // .permitAll()에서 수정
+                                .anyRequest().authenticated() // .permitAll()에서 수정
+                )
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
     }
 

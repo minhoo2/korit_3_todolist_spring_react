@@ -2,6 +2,7 @@ package com.example.todo_backend_mariadb.domain;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,9 +10,10 @@ import lombok.NoArgsConstructor;
 @Data   // 종합 패키지 -> getter / setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Todo {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false, updatable = false)
     private Long id;
 
@@ -21,5 +23,8 @@ public class Todo {
     @Column(nullable = false)
     private boolean completed;
 
-
+    // User 엔티티와의 연관관계 추가
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
 }
