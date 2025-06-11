@@ -18,18 +18,34 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
+//      Oauth2 적용 전
+//    @Bean
+//    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//        http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+//                .csrf(csrf -> csrf.disable())
+//                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                .authorizeHttpRequests(authz ->
+//                        // preflight 요청(OPTION METHOD)은 인증 없이 모두 허용
+//                        authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+//                                // 현재 로그인 기능이 따로 없으므로, 모든 API 요청을 임시로 허용
+//                        .requestMatchers("/api/**").permitAll()
+//                                // 혹시 모를 나머지 모든 요청도 일단 허용
+//                        .anyRequest().permitAll()
+//                );
+//        return http.build();
+//    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authz ->
-                        // preflight 요청(OPTION 메서드)은 인증 없이 모두 허용
+                        // preflight 요청(OPTION METHOD)은 인증 없이 모두 허용
                         authz.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                                // 이제 /api 관련 경로는 인증된 사용자만 접근 가능하도록 변경할겁니다.
-                                .requestMatchers("/api/**").authenticated() // .permitAll()에서 수정
-                                .anyRequest().authenticated() // .permitAll()에서 수정
+                                // 현재 로그인 기능이 따로 없으므로, 모든 API 요청을 임시로 허용
+                                .requestMatchers("/api/**").authenticated()
+                                .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
         return http.build();
@@ -37,15 +53,18 @@ public class SecurityConfig {
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
+
         CorsConfiguration configuration = new CorsConfiguration();
+
         configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH","DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "DELETE", "OPTIONS", "PUT"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Cache-Control", "Content-Type"));
         configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        UrlBasedCorsConfigurationSource  source = new UrlBasedCorsConfigurationSource();
+
         source.registerCorsConfiguration("/**", configuration);
+
         return source;
     }
 }
-
-
